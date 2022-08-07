@@ -1,20 +1,20 @@
 package com.developers.dmaker.service;
 
 import com.developers.dmaker.dto.CreateDeveloper;
+import com.developers.dmaker.dto.DeveloperDetailDto;
+import com.developers.dmaker.dto.DeveloperDto;
 import com.developers.dmaker.entity.Developer;
 import com.developers.dmaker.exception.DmakerException;
 import com.developers.dmaker.repository.DeveloperRepository;
 import com.developers.dmaker.type.DeveloperLevel;
-import com.developers.dmaker.type.DeveloperSkillType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
+import java.util.stream.Collectors;
 
-import java.util.Optional;
-
-import static com.developers.dmaker.exception.DmakerErrorCode.DUPLICATED_MEMBER_ID;
-import static com.developers.dmaker.exception.DmakerErrorCode.LEVEL_EXPERIENCE_YEARS_NOT_MATCHED;
+import static com.developers.dmaker.exception.DmakerErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -22,20 +22,24 @@ public class DmakerService {
     private final DeveloperRepository developerRepository;
 
     @Transactional
-    public void createDeveloper(CreateDeveloper.Request request) {
+    public CreateDeveloper.Response createDeveloper(CreateDeveloper.Request request) {
         validateCreateDeveloperRequest(request);
 
         Developer developer = Developer.builder()
-                .developerLevel(DeveloperLevel.NEW)
-                .developerSkillType(DeveloperSkillType.BACK_END)
-                .experienceYears(2)
-                .name("Olaf")
-                .age(5)
+                .developerLevel(request.getDeveloperLevel())
+                .developerSkillType(request.getDeveloperSkillType())
+                .experienceYears(request.getExperienceYears())
+                .memberId(request.getMemberId())
+                .name(request.getName())
+                .age(request.getAge())
                 .build();
 
         developerRepository.save(developer);
+
+        return CreateDeveloper.Response.fromEntity(developer);
     }
 
+    // business validation
     private void validateCreateDeveloperRequest(CreateDeveloper.Request request) {
         // business validation
         DeveloperLevel developerLevel = request.getDeveloperLevel();
@@ -58,5 +62,19 @@ public class DmakerService {
                 .ifPresent(developer -> {
                     throw new DmakerException(DUPLICATED_MEMBER_ID);
                 });
+    }
+
+    public List<DeveloperDto> getAllDevelopers() {
+
+        return developerRepository.findAll()
+                .stream().map(DeveloperDto::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+    public DeveloperDetailDto getDeveloperDetail(String memberId) {
+
+        return developerRepository.findByMemberId(memberId)
+                .map(DeveloperDetailDto::fromEntity)
+                .orElseThrow(() -> new DmakerException(NO_DEVELOPER));
     }
 }
