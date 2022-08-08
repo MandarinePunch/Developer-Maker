@@ -3,13 +3,13 @@ package com.developers.dmaker.controller;
 import com.developers.dmaker.dto.CreateDeveloper;
 import com.developers.dmaker.dto.DeveloperDetailDto;
 import com.developers.dmaker.dto.DeveloperDto;
+import com.developers.dmaker.dto.EditDeveloper;
 import com.developers.dmaker.service.DmakerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
@@ -29,7 +29,8 @@ public class DmakerController {
 
     @GetMapping("/developer/{memberId}")
     public DeveloperDetailDto getDeveloperDetail(
-            @PathVariable String memberId) {
+            @PathVariable String memberId
+    ) {
         // GET /developers HTTP/1.1
         log.info("GET /developers HTTP/1.1");
 
@@ -44,5 +45,16 @@ public class DmakerController {
         log.info("request : {}", request);
 
         return dmakerService.createDeveloper(request);
+    }
+
+    @PutMapping("/developer/{memberId}")
+    public DeveloperDetailDto editDeveloper(
+            @PathVariable String memberId,
+            @Valid @RequestBody EditDeveloper.Request request
+    ) {
+        // GET /developers HTTP/1.1
+        log.info("GET /developers HTTP/1.1");
+
+        return dmakerService.editDeveloper(memberId, request);
     }
 }
