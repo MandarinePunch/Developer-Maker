@@ -1,6 +1,5 @@
 package com.developers.dmaker.entity;
 
-import com.developers.dmaker.code.StatusCode;
 import com.developers.dmaker.type.DeveloperLevel;
 import com.developers.dmaker.type.DeveloperSkillType;
 import lombok.*;
@@ -18,27 +17,14 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-public class Developer {
+public class RetiredDeveloper {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // 주니어 시니어 구분 레벨
-    @Enumerated(EnumType.STRING)
-    private DeveloperLevel developerLevel;
-
-    // 프론트, 백, 풀스택 구분
-    @Enumerated(EnumType.STRING)
-    private DeveloperSkillType developerSkillType;
-
-    private Integer experienceYears;
     private String memberId;
     private String name;
-    private Integer age;
-
-    @Enumerated(EnumType.STRING)
-    private StatusCode statusCode;
 
     @CreatedDate
     private LocalDateTime createdAt;
