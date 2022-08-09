@@ -1,14 +1,15 @@
 package com.developers.dmaker.controller;
 
-import com.developers.dmaker.dto.CreateDeveloper;
-import com.developers.dmaker.dto.DeveloperDetailDto;
-import com.developers.dmaker.dto.DeveloperDto;
-import com.developers.dmaker.dto.EditDeveloper;
+import com.developers.dmaker.dto.*;
+import com.developers.dmaker.exception.DmakerException;
 import com.developers.dmaker.service.DmakerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -41,7 +42,6 @@ public class DmakerController {
     public CreateDeveloper.Response createDevelopers(
             @Valid @RequestBody CreateDeveloper.Request request
     ) {
-        // GET /developers HTTP/1.1
         log.info("request : {}", request);
 
         return dmakerService.createDeveloper(request);
@@ -52,8 +52,7 @@ public class DmakerController {
             @PathVariable String memberId,
             @Valid @RequestBody EditDeveloper.Request request
     ) {
-        // GET /developers HTTP/1.1
-        log.info("GET /developers HTTP/1.1");
+        log.info("PUT /developers HTTP/1.1");
 
         return dmakerService.editDeveloper(memberId, request);
     }
@@ -61,7 +60,23 @@ public class DmakerController {
     @DeleteMapping("/developer/{memberId}")
     public DeveloperDetailDto deleteDeveloper(
             @PathVariable String memberId
-    ){
+    ) {
+        log.info("DELETE /developers HTTP/1.1");
+
         return dmakerService.deleteDeveloper(memberId);
+    }
+    
+    @ExceptionHandler(DmakerException.class)
+    public DmakerErrorResponse handleException(
+            DmakerException e,
+            HttpServletRequest request
+    ) {
+        log.error("errorCode: {}, url: {}, message: {}",
+                e.getDmakerErrorCode(), request.getRequestURI(), e.getDetailMessage());
+
+        return DmakerErrorResponse.builder()
+                .dmakerErrorCode(e.getDmakerErrorCode())
+                .errorMessage(e.getDetailMessage())
+                .build();
     }
 }
