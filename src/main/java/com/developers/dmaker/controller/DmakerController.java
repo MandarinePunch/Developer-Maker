@@ -65,18 +65,4 @@ public class DmakerController {
 
         return dmakerService.deleteDeveloper(memberId);
     }
-    
-    @ExceptionHandler(DmakerException.class)
-    public DmakerErrorResponse handleException(
-            DmakerException e,
-            HttpServletRequest request
-    ) {
-        log.error("errorCode: {}, url: {}, message: {}",
-                e.getDmakerErrorCode(), request.getRequestURI(), e.getDetailMessage());
-
-        return DmakerErrorResponse.builder()
-                .dmakerErrorCode(e.getDmakerErrorCode())
-                .errorMessage(e.getDetailMessage())
-                .build();
-    }
 }

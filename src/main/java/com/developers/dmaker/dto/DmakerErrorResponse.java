@@ -9,6 +9,6 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class DmakerErrorResponse {
-    private DmakerErrorCode dmakerErrorCode;
+    private DmakerErrorCode errorCode;
     private String errorMessage;
 }
