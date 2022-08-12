@@ -6,7 +6,6 @@ import com.developers.dmaker.entity.Developer;
 import com.developers.dmaker.exception.DmakerErrorCode;
 import com.developers.dmaker.exception.DmakerException;
 import com.developers.dmaker.repository.DeveloperRepository;
-import com.developers.dmaker.repository.RetiredDeveloperRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -22,6 +21,7 @@ import static com.developers.dmaker.type.DeveloperLevel.SENIOR;
 import static com.developers.dmaker.type.DeveloperSkillType.BACK_END;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
@@ -31,9 +31,6 @@ import static org.mockito.Mockito.verify;
 class DmakerServiceTest {
     @Mock
     private DeveloperRepository developerRepository;
-
-    @Mock
-    private RetiredDeveloperRepository retiredDeveloperRepository;
 
     @InjectMocks
     private DmakerService dmakerService;
@@ -77,12 +74,14 @@ class DmakerServiceTest {
         //given
         given(developerRepository.findByMemberId(anyString()))
                 .willReturn(Optional.empty());
+        given(developerRepository.save(any()))
+                .willReturn(defaultDeveloper);
         // 데이터 캡쳐를 위해
         ArgumentCaptor<Developer> captor =
                 ArgumentCaptor.forClass(Developer.class);
 
         //when
-        CreateDeveloper.Response developer = dmakerService.createDeveloper(defaultCreateRequest);
+        dmakerService.createDeveloper(defaultCreateRequest);
 
         //then
         // 특정 mock이 몇 번 호출됐다는 것을 검증
