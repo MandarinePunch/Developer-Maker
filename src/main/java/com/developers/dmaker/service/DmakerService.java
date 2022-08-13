@@ -41,7 +41,7 @@ public class DmakerService {
 
     private Developer createDeveloperFromRequest(
             CreateDeveloper.Request request
-    ){
+    ) {
         return Developer.builder()
                 .developerLevel(request.getDeveloperLevel())
                 .developerSkillType(request.getDeveloperSkillType())
@@ -57,8 +57,7 @@ public class DmakerService {
     private void validateCreateDeveloperRequest(
             @NonNull CreateDeveloper.Request request
     ) {
-        validateDeveloperLevel(
-                request.getDeveloperLevel(),
+        request.getDeveloperLevel().validateExperienceYears(
                 request.getExperienceYears()
         );
 
@@ -80,7 +79,7 @@ public class DmakerService {
         return DeveloperDetailDto.fromEntity(getDeveloperByMemberId(memberId));
     }
 
-    private Developer getDeveloperByMemberId(String memberId){
+    private Developer getDeveloperByMemberId(String memberId) {
         return developerRepository.findByMemberId(memberId)
                 .orElseThrow(() -> new DmakerException(NO_DEVELOPER));
     }
@@ -89,8 +88,8 @@ public class DmakerService {
     public DeveloperDetailDto editDeveloper(
             String memberId, EditDeveloper.Request request
     ) {
-        validateDeveloperLevel(
-                request.getDeveloperLevel(), request.getExperienceYears()
+        request.getDeveloperLevel().validateExperienceYears(
+                request.getExperienceYears()
         );
 
         return DeveloperDetailDto.fromEntity(
@@ -113,18 +112,7 @@ public class DmakerService {
     private void validateDeveloperLevel(
             DeveloperLevel developerLevel, Integer experienceYears
     ) {
-        if (developerLevel == DeveloperLevel.SENIOR
-                && experienceYears < 10) {
-            throw new DmakerException(LEVEL_EXPERIENCE_YEARS_NOT_MATCHED);
-        }
-        if (developerLevel == DeveloperLevel.JUNGNIOR
-                && (experienceYears < 4 || experienceYears > 10)) {
-            throw new DmakerException(LEVEL_EXPERIENCE_YEARS_NOT_MATCHED);
-        }
-        if (developerLevel == DeveloperLevel.JUNIOR
-                && experienceYears > 4) {
-            throw new DmakerException(LEVEL_EXPERIENCE_YEARS_NOT_MATCHED);
-        }
+        developerLevel.validateExperienceYears(experienceYears);
     }
 
     @Transactional
